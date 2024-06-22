@@ -1,0 +1,19 @@
+{
+  "name": "svn-creator-api",
+  "version": "1.0.0",
+  "description": "API project for the SVN creator",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha tests --recursive"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "nodemailer": "^6.9.13",
+    "nunjucks": "^3.2.4",
+    "winston": "^3.13.0"
+  }
+}
