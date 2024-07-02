@@ -162,7 +162,7 @@ app.post('/create', async (req, res, next) => {
         //         }
         //     });
         // });
-        logger.debug(`${tempExportPath} deleted successfully`);
+        // logger.debug(`${tempExportPath} deleted successfully`);
 
         // Final response if everything succeeds
         logger.warn(`${localPath} created successfully`);
