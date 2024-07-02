@@ -3,7 +3,7 @@ const nodemailer = require('nodemailer');
 
 // Create and export the transporter
 const transporter = nodemailer.createTransport({
-    host: 'smtp.office365.com',
+    host: 'smtp-relay.gmail.com',
     secure: false,
     port: '587',
     tls: {
