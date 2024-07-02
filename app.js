@@ -33,11 +33,11 @@ app.get('/ping', (req, res) => {
 app.post('/create', async (req, res, next) => {
     const { repoName, users, fileLock } = req.body;
     const getFullYear = new Date().getFullYear();
-    const localPath = `/volume1/SVN/${getFullYear}_${repoName}`;
-    const templatePath = 'svn://dsnas.polymorph.local/SVNDevTemplate'
-    const tempExportPath = `/volume1/scripts/svncreatorapi/tmp/${getFullYear}_${repoName}`;
-    const tempTemplatePath = `/volume1/scripts/svncreatorapi/tmp/SVNDevTemplate`;
-    const checkoutLink = `svn://svn.polymorph.fr/${getFullYear}_${repoName}`;
+    const localPath = `/var/svn/${getFullYear}_${repoName}`;
+    // const templatePath = 'svn://dsnas.polymorph.local/SVNDevTemplate'
+    // const tempExportPath = `/volume1/scripts/svncreatorapi/tmp/${getFullYear}_${repoName}`;
+    // const tempTemplatePath = `/volume1/scripts/svncreatorapi/tmp/SVNDevTemplate`;
+    // const checkoutLink = `svn://svn.polymorph.fr/${getFullYear}_${repoName}`;
 
 
     const passwdFilePath = `${localPath}/conf/passwd`;
@@ -64,76 +64,76 @@ app.post('/create', async (req, res, next) => {
         // Write conf file
         fs.copyFileSync(sourceFilePath, destinationFilePath);
 
-        // Checkout new repository
-        await new Promise((resolve, reject) => {
-            exec(`svn checkout ${checkoutLink} ${tempExportPath} --username ${users[0].username} --password ${users[0].password}`, (error, stdout, stderr) => {
-                if (error || stderr) {
-                    reject(error || new Error(stderr));
-                } else {
-                    resolve();
-                }
-            });
-        });
+        // // Checkout new repository
+        // await new Promise((resolve, reject) => {
+        //     exec(`svn checkout ${checkoutLink} ${tempExportPath} --username ${users[0].username} --password ${users[0].password}`, (error, stdout, stderr) => {
+        //         if (error || stderr) {
+        //             reject(error || new Error(stderr));
+        //         } else {
+        //             resolve();
+        //         }
+        //     });
+        // });
 
-        // Export the template structure from another repository
-        await new Promise((resolve, reject) => {
-            exec(`svn export ${templatePath} ${tempTemplatePath} --username user --password control35`, (error, stdout, stderr) => {
-                if (error || stderr) {
-                    reject(error || new Error(stderr));
-                } else {
-                    resolve();
-                }
-            });
-        });
-        logger.debug(`Template structure exported successfully`);
+        // // Export the template structure from another repository
+        // await new Promise((resolve, reject) => {
+        //     exec(`svn export ${templatePath} ${tempTemplatePath} --username user --password control35`, (error, stdout, stderr) => {
+        //         if (error || stderr) {
+        //             reject(error || new Error(stderr));
+        //         } else {
+        //             resolve();
+        //         }
+        //     });
+        // });
+        // logger.debug(`Template structure exported successfully`);
 
-        // Copy the template structure to the new repository
-        await new Promise((resolve, reject) => {
-            exec(`cp -r ${tempTemplatePath}/* ${tempExportPath}`, (error, stdout, stderr) => {
-                if (error || stderr) {
-                    reject(error || new Error(stderr));
-                } else {
-                    resolve();
-                }
-            });
-        });
+        // // Copy the template structure to the new repository
+        // await new Promise((resolve, reject) => {
+        //     exec(`cp -r ${tempTemplatePath}/* ${tempExportPath}`, (error, stdout, stderr) => {
+        //         if (error || stderr) {
+        //             reject(error || new Error(stderr));
+        //         } else {
+        //             resolve();
+        //         }
+        //     });
+        // });
 
-        // Add files to version control
-        await new Promise((resolve, reject) => {
-            exec(`cd ${tempExportPath} && svn add ${tempExportPath}/*`, (error, stdout, stderr) => {
-                if (error || stderr) {
-                    reject(error || new Error(stderr));
-                } else {
-                    resolve();
-                }
-            });
-        });
-        logger.debug(`${tempExportPath} added successfully`);
+        // // Add files to version control
+        // await new Promise((resolve, reject) => {
+        //     exec(`cd ${tempExportPath} && svn add ${tempExportPath}/*`, (error, stdout, stderr) => {
+        //         if (error || stderr) {
+        //             reject(error || new Error(stderr));
+        //         } else {
+        //             resolve();
+        //         }
+        //     });
+        // });
+        // logger.debug(`${tempExportPath} added successfully`);
 
         // Add file lock on Graph folder if user requested it
-        if (fileLock) {
-            await new Promise((resolve, reject) => {
-                exec(`svn propset svn:auto-props 'svn:needs-lock=*' ${tempExportPath}/Graph`, (error, stdout, stderr) => {
-                    if (error || stderr) {
-                        reject(error || new Error(stderr));
-                    } else {
-                        resolve();
-                    }
-                });
-            });
-        };
+        // if (fileLock) {
+        //     await new Promise((resolve, reject) => {
+        //         exec(`svn propset svn:auto-props 'svn:needs-lock=*' ${tempExportPath}/Graph`, (error, stdout, stderr) => {
+        //             if (error || stderr) {
+        //                 reject(error || new Error(stderr));
+        //             } else {
+        //                 resolve();
+        //             }
+        //         });
+        //     });
+        // };
 
-        // Commit changes
-        await new Promise((resolve, reject) => {
-            exec(`svn commit ${tempExportPath} -m "Import structure" --username ${users[0].username} --password ${users[0].password}`, (error, stdout, stderr) => {
-                if (error || stderr) {
-                    reject(error || new Error(stderr));
-                } else {
-                    resolve();
-                }
-            });
-        });
-        logger.debug(`${tempExportPath} committed successfully`);
+        // // Commit changes
+        // await new Promise((resolve, reject) => {
+        //     exec(`svn commit ${tempExportPath} -m "Import structure" --username ${users[0].username} --password ${users[0].password}`, (error, stdout, stderr) => {
+        //         if (error || stderr) {
+        //             reject(error || new Error(stderr));
+        //         } else {
+        //             resolve();
+        //         }
+        //     });
+        // });
+        // logger.debug(`${tempExportPath} committed successfully`);
 
         // Send confirmation email to each user
         for (const user of users) {
@@ -153,15 +153,15 @@ app.post('/create', async (req, res, next) => {
         }
 
         // Remove temp folder
-        await new Promise((resolve, reject) => {
-            exec(`rm -rf ${tempExportPath} && rm -rf ${tempTemplatePath}`, (error, stdout, stderr) => {
-                if (error || stderr) {
-                    reject(error || new Error(stderr));
-                } else {
-                    resolve();
-                }
-            });
-        });
+        // await new Promise((resolve, reject) => {
+        //     exec(`rm -rf ${tempExportPath} && rm -rf ${tempTemplatePath}`, (error, stdout, stderr) => {
+        //         if (error || stderr) {
+        //             reject(error || new Error(stderr));
+        //         } else {
+        //             resolve();
+        //         }
+        //     });
+        // });
         logger.debug(`${tempExportPath} deleted successfully`);
 
         // Final response if everything succeeds
