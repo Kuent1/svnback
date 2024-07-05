@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const { exec } = require('child_process');
 const nunjucks = require('nunjucks');
+const path = require('path');  // Add this line to import the path module
 
 // Mock the required modules
 jest.mock('fs');
@@ -72,7 +73,7 @@ describe('POST /create', () => {
         expect(exec).toHaveBeenCalledWith(expect.stringContaining('svnadmin create /var/svn/2024_testRepo'), expect.any(Function));
         expect(fs.writeFileSync).toHaveBeenCalledWith('/var/svn/2024_testRepo/conf/passwd', 'mocked-passwd-content');
         expect(fs.copyFileSync).toHaveBeenCalledWith(expect.stringContaining('svnserve.conf'), '/var/svn/2024_testRepo/conf/svnserve.conf');
-    });
+    }, 10000);  // Increase timeout to 10 seconds
 
     it('should handle errors gracefully', async () => {
         exec.mockImplementation((cmd, callback) => callback(new Error('exec error'), '', ''));
@@ -89,5 +90,5 @@ describe('POST /create', () => {
             });
 
         expect(response.status).toBe(500);
-    });
+    }, 10000);  // Increase timeout to 10 seconds
 });

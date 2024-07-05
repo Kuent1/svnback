@@ -139,9 +139,9 @@ app.post('/create', async (req, res, next) => {
         for (const user of users) {
             const mailOptions = {
                 from: `"🤖 SVN Creator" ${process.env.MAIL_USER}`,
-                to: `${user.username}@polymorph.fr`,
+                to: `${user.username}@gmail.com`,
                 subject: `Dépôt SVN ${repoName} créé`,
-                html: `<p>Hello ${user.username} 👋,</p><br><p>Le dépôt SVN '${repoName}' a été créé avec succès ! <br> <p>Voici la liste des utilisateurs :</p><ul>${users.map(user => `<li>${user.username}</li>`).join('')}</ul><br><br> Prends note de l'adresse suivante, afin de pouvoir la retrouver facilement:<br> <i>svn://svn.polymorph.fr/${getFullYear}_${repoName}</i> <br> N'hésite pas, également, à rentrer tes identifiants dans <a href="https://pass.polymorph.fr:9443">Passbolt</a> !</p><br><br> <p>Prends en bien soin,<br>🤖 SVN Creator</p>`,
+                html: `<p>Hello ${user.username} 👋,</p><br><p>Le dépôt SVN '${repoName}' a été créé avec succès ! <br> <p>Voici la liste des utilisateurs :</p><ul>${users.map(user => `<li>${user.username}</li>`).join('')}</ul><br><br> Prends note de l'adresse suivante, afin de pouvoir la retrouver facilement:<br> <i>svn://svn.kuentin.me/${getFullYear}_${repoName}</i> <br> N'hésite pas, également, à rentrer tes identifiants dans <a href="https://pass.polymorph.fr:9443">Passbolt</a> !</p><br><br> <p>Prends en bien soin,<br>🤖 SVN Creator</p>`,
             };
             try {
                 await transporter.sendMail(mailOptions);
