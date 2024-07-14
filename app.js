@@ -12,13 +12,6 @@ app.use(cors());
 
 // Set up middleware
 app.use(bodyParser.json());
-app.use(routes); // Use routes under /api prefix
-
-// Start the server
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-    logger.info(`Node server is running on port ${port}`);
-});
+app.use(routes);
 
 module.exports = app;
