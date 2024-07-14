@@ -4,7 +4,7 @@
   "description": "API project for the SVN creator",
   "main": "app.js",
   "scripts": {
-    "test": "mocha tests --recursive"
+    "test": "npx jest"
   },
   "author": "",
   "license": "ISC",

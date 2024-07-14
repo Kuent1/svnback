@@ -4,7 +4,7 @@ const fs = require('fs');
 const { exec } = require('child_process');
 const nunjucks = require('nunjucks');
 const path = require('path');
-const { app, server } = require('../app');
+const app = require('../app');
 
 // Mock the required modules
 jest.mock('fs');
@@ -12,8 +12,13 @@ jest.mock('child_process');
 jest.mock('nunjucks');
 
 describe('POST /create', () => {
-    afterAll(() => {
-        server.close();
+let server;
+    beforeAll((done) => {
+        server = app.listen(4000, done); // Start the server
+    });
+
+    afterAll((done) => {
+        server.close(done);
     });
 
     afterEach(() => {
@@ -27,7 +32,7 @@ describe('POST /create', () => {
         nunjucks.render.mockReturnValue('mocked-passwd-content');
 
         const response = await request(app)
-            .post('/api/create')
+            .post('/create')
             .send({
                 repoName: 'testRepo',
                 users: [
@@ -48,7 +53,7 @@ describe('POST /create', () => {
         exec.mockImplementation((cmd, callback) => callback(new Error('exec error'), '', ''));
 
         const response = await request(app)
-            .post('/api/create')
+            .post('/create')
             .send({
                 repoName: 'testRepo',
                 users: [
