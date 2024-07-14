@@ -3,7 +3,8 @@ const request = require('supertest');
 const fs = require('fs');
 const { exec } = require('child_process');
 const nunjucks = require('nunjucks');
-const app = require('../app');
+const path = require('path');
+const { app, server } = require('../app');
 
 // Mock the required modules
 jest.mock('fs');
@@ -11,6 +12,10 @@ jest.mock('child_process');
 jest.mock('nunjucks');
 
 describe('POST /create', () => {
+    afterAll(() => {
+        server.close();
+    });
+
     afterEach(() => {
         jest.clearAllMocks();
     });
@@ -22,7 +27,7 @@ describe('POST /create', () => {
         nunjucks.render.mockReturnValue('mocked-passwd-content');
 
         const response = await request(app)
-            .post('/create')
+            .post('/api/create')
             .send({
                 repoName: 'testRepo',
                 users: [
@@ -36,6 +41,23 @@ describe('POST /create', () => {
         expect(response.body.message).toBe('Repository created successfully');
         expect(exec).toHaveBeenCalledWith(expect.stringContaining('svnadmin create /var/svn/2024_testRepo'), expect.any(Function));
         expect(fs.writeFileSync).toHaveBeenCalledWith('/var/svn/2024_testRepo/conf/passwd', 'mocked-passwd-content');
-        expect(fs.copyFileSync).toHaveBeenCalledWith(expect.stringContaining('svnserve.conf'), '/var/svn/2024_testRepo/conf/svnserve.conf');
+        expect(fs.copyFileSync).toHaveBeenCalledWith(path.join(__dirname, 'views', 'svnserve.conf'), path.join('/var/svn/2024_testRepo/conf', 'svnserve.conf'));
     }, 10000);  // Increase timeout to 10 seconds
-}, 10000);  // Increase timeout to 10 seconds
+
+    it('should handle errors gracefully', async () => {
+        exec.mockImplementation((cmd, callback) => callback(new Error('exec error'), '', ''));
+
+        const response = await request(app)
+            .post('/api/create')
+            .send({
+                repoName: 'testRepo',
+                users: [
+                    { username: 'user1', password: 'password1' },
+                    { username: 'user2', password: 'password2' }
+                ],
+                fileLock: true
+            });
+
+        expect(response.status).toBe(500);
+    }, 10000);  // Increase timeout to 10 seconds
+});
