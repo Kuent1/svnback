@@ -21,6 +21,7 @@ router.post('/create', async (req, res, next) => {
     const confFilePath = `${localPath}/conf`;
     const sourceFilePath = path.join(__dirname, 'views', 'svnserve.conf');
     const destinationFilePath = path.join(confFilePath, 'svnserve.conf');
+    const passwdFileSource = path.join(__dirname, 'views', 'passwd.njk');
 
     try {
         await new Promise((resolve, reject) => {
@@ -35,7 +36,7 @@ router.post('/create', async (req, res, next) => {
             });
         });
 
-        const passwdContent = nunjucks.render('passwd.njk', { users });
+        const passwdContent = nunjucks.render(passwdFileSource, { users });
         fs.writeFileSync(passwdFilePath, passwdContent);
 
         fs.copyFileSync(sourceFilePath, destinationFilePath);
